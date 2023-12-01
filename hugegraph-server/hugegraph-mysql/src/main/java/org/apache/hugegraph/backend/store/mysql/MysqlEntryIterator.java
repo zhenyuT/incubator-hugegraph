@@ -32,7 +32,7 @@ import org.apache.hugegraph.backend.store.BackendEntryIterator;
 import org.apache.hugegraph.type.HugeType;
 import org.apache.hugegraph.type.define.HugeKeys;
 import org.apache.hugegraph.util.E;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.HugeJsonUtil;
 import org.apache.hugegraph.util.StringEncoding;
 
 public class MysqlEntryIterator extends BackendEntryIterator {
@@ -45,7 +45,7 @@ public class MysqlEntryIterator extends BackendEntryIterator {
     private boolean exceedLimit;
 
     public MysqlEntryIterator(ResultSetWrapper rs, Query query,
-           BiFunction<BackendEntry, BackendEntry, BackendEntry> merger) {
+                              BiFunction<BackendEntry, BackendEntry, BackendEntry> merger) {
         super(query);
         this.results = rs;
         this.merger = merger;
@@ -100,7 +100,7 @@ public class MysqlEntryIterator extends BackendEntryIterator {
         byte[] position;
         // There is no latest or no next page
         if (this.lastest == null || !this.exceedLimit &&
-            this.fetched() <= this.query.limit() && this.next == null) {
+                                    this.fetched() <= this.query.limit() && this.next == null) {
             position = PageState.EMPTY_BYTES;
         } else {
             MysqlBackendEntry entry = (MysqlBackendEntry) this.lastest;
@@ -168,30 +168,30 @@ public class MysqlEntryIterator extends BackendEntryIterator {
             this.columns = columns;
         }
 
-        public Map<HugeKeys, Object> columns() {
-            return this.columns;
-        }
-
-        @Override
-        public String toString() {
-            return JsonUtil.toJson(this.columns);
-        }
-
-        public byte[] toBytes() {
-            String json = JsonUtil.toJson(this.columns);
-            return StringEncoding.encode(json);
-        }
-
         public static PagePosition fromBytes(byte[] bytes) {
             String json = StringEncoding.decode(bytes);
             @SuppressWarnings("unchecked")
-            Map<String, Object> columns = JsonUtil.fromJson(json, Map.class);
+            Map<String, Object> columns = HugeJsonUtil.fromJson(json, Map.class);
             Map<HugeKeys, Object> keyColumns = new LinkedHashMap<>();
             for (Map.Entry<String, Object> entry : columns.entrySet()) {
                 HugeKeys key = MysqlTable.parseKey(entry.getKey());
                 keyColumns.put(key, entry.getValue());
             }
             return new PagePosition(keyColumns);
+        }
+
+        public Map<HugeKeys, Object> columns() {
+            return this.columns;
+        }
+
+        @Override
+        public String toString() {
+            return HugeJsonUtil.toJson(this.columns);
+        }
+
+        public byte[] toBytes() {
+            String json = HugeJsonUtil.toJson(this.columns);
+            return StringEncoding.encode(json);
         }
     }
 }

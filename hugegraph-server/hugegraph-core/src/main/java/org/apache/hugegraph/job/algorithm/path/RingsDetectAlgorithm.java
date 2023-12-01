@@ -26,7 +26,7 @@ import org.apache.hugegraph.job.algorithm.AbstractAlgorithm;
 import org.apache.hugegraph.job.algorithm.Consumers.StopExecution;
 import org.apache.hugegraph.traversal.algorithm.SubGraphTraverser;
 import org.apache.hugegraph.type.define.Directions;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.HugeJsonUtil;
 import org.apache.hugegraph.util.ParameterUtil;
 
 public class RingsDetectAlgorithm extends AbstractAlgorithm {
@@ -120,7 +120,7 @@ public class RingsDetectAlgorithm extends AbstractAlgorithm {
                         throw new StopExecution("exceed limit %s", limit);
                     }
                     if (!countOnly) {
-                        String ringJson = JsonUtil.toJson(ring.vertices());
+                        String ringJson = HugeJsonUtil.toJson(ring.vertices());
                         synchronized (ringsJson) {
                             ringsJson.appendRaw(ringJson);
                         }

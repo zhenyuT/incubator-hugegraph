@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.HugeJsonUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class ProjectApiTest extends BaseApiTest {
                                .path(projectId)
                                .queryParam("action", "remove_graph")
                                .request()
-                               .put(Entity.json(JsonUtil.toJson(graphs)));
+                               .put(Entity.json(HugeJsonUtil.toJson(graphs)));
                 assertResponseStatus(200, resp);
             }
             // delete project

@@ -37,7 +37,7 @@ import org.apache.hugegraph.job.GremlinJob;
 import org.apache.hugegraph.job.JobBuilder;
 import org.apache.hugegraph.metrics.MetricsUtil;
 import org.apache.hugegraph.util.E;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.HugeJsonUtil;
 import org.apache.hugegraph.util.Log;
 import org.slf4j.Logger;
 
@@ -66,7 +66,7 @@ public class GremlinAPI extends API {
     private static final int MAX_NAME_LENGTH = 256;
 
     private static final Histogram GREMLIN_JOB_INPUT_HISTOGRAM =
-            MetricsUtil.registerHistogram(GremlinAPI.class, "gremlin-input");
+        MetricsUtil.registerHistogram(GremlinAPI.class, "gremlin-input");
 
     @POST
     @Timed
@@ -102,6 +102,26 @@ public class GremlinAPI extends API {
         private String language = "gremlin-groovy";
         @JsonProperty
         private Map<String, String> aliases = new HashMap<>();
+
+        public static GremlinRequest fromJson(String json) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = HugeJsonUtil.fromJson(json, Map.class);
+            String gremlin = (String) map.get("gremlin");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> bindings = (Map<String, Object>)
+                map.get("bindings");
+            String language = (String) map.get("language");
+            @SuppressWarnings("unchecked")
+            Map<String, String> aliases = (Map<String, String>)
+                map.get("aliases");
+
+            GremlinRequest request = new GremlinRequest();
+            request.gremlin(gremlin);
+            request.bindings(bindings);
+            request.language(language);
+            request.aliases(aliases);
+            return request;
+        }
 
         public String gremlin() {
             return this.gremlin;
@@ -181,27 +201,7 @@ public class GremlinAPI extends API {
             map.put("bindings", this.bindings);
             map.put("language", this.language);
             map.put("aliases", this.aliases);
-            return JsonUtil.toJson(map);
-        }
-
-        public static GremlinRequest fromJson(String json) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> map = JsonUtil.fromJson(json, Map.class);
-            String gremlin = (String) map.get("gremlin");
-            @SuppressWarnings("unchecked")
-            Map<String, Object> bindings = (Map<String, Object>)
-                                           map.get("bindings");
-            String language = (String) map.get("language");
-            @SuppressWarnings("unchecked")
-            Map<String, String> aliases = (Map<String, String>)
-                                          map.get("aliases");
-
-            GremlinRequest request = new GremlinRequest();
-            request.gremlin(gremlin);
-            request.bindings(bindings);
-            request.language(language);
-            request.aliases(aliases);
-            return request;
+            return HugeJsonUtil.toJson(map);
         }
     }
 }

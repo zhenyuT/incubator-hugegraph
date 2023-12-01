@@ -29,7 +29,7 @@ import org.apache.hugegraph.job.ComputerJob;
 import org.apache.hugegraph.job.JobBuilder;
 import org.apache.hugegraph.task.HugeTask;
 import org.apache.hugegraph.util.E;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.HugeJsonUtil;
 import org.apache.hugegraph.util.Log;
 import org.slf4j.Logger;
 
@@ -79,7 +79,7 @@ public class ComputerAPI extends API {
                                                     "parameters", parameters);
         JobBuilder<Object> builder = JobBuilder.of(g);
         builder.name("computer:" + computer)
-               .input(JsonUtil.toJson(input))
+               .input(HugeJsonUtil.toJson(input))
                .job(new ComputerJob());
         HugeTask<Object> task = builder.schedule();
         return ImmutableMap.of("task_id", task.id());

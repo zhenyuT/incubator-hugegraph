@@ -29,7 +29,7 @@ import org.apache.hugegraph.job.AlgorithmJob;
 import org.apache.hugegraph.job.JobBuilder;
 import org.apache.hugegraph.server.RestServer;
 import org.apache.hugegraph.util.E;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.HugeJsonUtil;
 import org.apache.hugegraph.util.Log;
 import org.slf4j.Logger;
 
@@ -37,7 +37,6 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableMap;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.NotFoundException;
@@ -80,7 +79,7 @@ public class AlgorithmAPI extends API {
                                                     "parameters", parameters);
         JobBuilder<Object> builder = JobBuilder.of(g);
         builder.name("algorithm:" + algorithm)
-               .input(JsonUtil.toJson(input))
+               .input(HugeJsonUtil.toJson(input))
                .job(new AlgorithmJob());
         return ImmutableMap.of("task_id", builder.schedule().id());
     }
