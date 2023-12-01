@@ -22,23 +22,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.hugegraph.config.HugeConfig;
 import org.apache.commons.lang.NotImplementedException;
-
 import org.apache.hugegraph.backend.BackendException;
 import org.apache.hugegraph.backend.id.Id;
 import org.apache.hugegraph.backend.id.IdGenerator;
 import org.apache.hugegraph.backend.serializer.TableBackendEntry;
 import org.apache.hugegraph.backend.serializer.TableSerializer;
 import org.apache.hugegraph.backend.store.BackendEntry;
+import org.apache.hugegraph.config.HugeConfig;
 import org.apache.hugegraph.schema.SchemaElement;
 import org.apache.hugegraph.structure.HugeElement;
 import org.apache.hugegraph.structure.HugeProperty;
 import org.apache.hugegraph.structure.HugeVertex;
 import org.apache.hugegraph.type.HugeType;
 import org.apache.hugegraph.type.define.HugeKeys;
+import org.apache.hugegraph.util.HugeJsonUtil;
 import org.apache.hugegraph.util.InsertionOrderUtil;
-import org.apache.hugegraph.util.JsonUtil;
 
 public class MysqlSerializer extends TableSerializer {
 
@@ -83,7 +82,7 @@ public class MysqlSerializer extends TableSerializer {
     protected Id[] toIdArray(Object object) {
         assert object instanceof String;
         String value = (String) object;
-        Number[] values = JsonUtil.fromJson(value, Number[].class);
+        Number[] values = HugeJsonUtil.fromJson(value, Number[].class);
         Id[] ids = new Id[values.length];
         int i = 0;
         for (Number number : values) {
@@ -104,7 +103,7 @@ public class MysqlSerializer extends TableSerializer {
         for (Id id : ids) {
             values[i++] = id.asLong();
         }
-        return JsonUtil.toJson(values);
+        return HugeJsonUtil.toJson(values);
     }
 
     @Override
@@ -124,7 +123,7 @@ public class MysqlSerializer extends TableSerializer {
             Object val = prop.value();
             properties.put(key, val);
         }
-        row.column(HugeKeys.PROPERTIES, JsonUtil.toJson(properties));
+        row.column(HugeKeys.PROPERTIES, HugeJsonUtil.toJson(properties));
     }
 
     @Override
@@ -137,14 +136,14 @@ public class MysqlSerializer extends TableSerializer {
         }
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> props = JsonUtil.fromJson(properties, Map.class);
+        Map<String, Object> props = HugeJsonUtil.fromJson(properties, Map.class);
         for (Map.Entry<String, Object> prop : props.entrySet()) {
             /*
              * The key is string instead of int, because the key in json
              * must be string
              */
             Id pkeyId = this.toId(Long.valueOf(prop.getKey()));
-            String colJson = JsonUtil.toJson(prop.getValue());
+            String colJson = HugeJsonUtil.toJson(prop.getValue());
             this.parseProperty(pkeyId, colJson, element);
         }
     }
@@ -153,7 +152,7 @@ public class MysqlSerializer extends TableSerializer {
     protected void writeUserdata(SchemaElement schema,
                                  TableBackendEntry entry) {
         assert entry instanceof MysqlBackendEntry;
-        entry.column(HugeKeys.USER_DATA, JsonUtil.toJson(schema.userdata()));
+        entry.column(HugeKeys.USER_DATA, HugeJsonUtil.toJson(schema.userdata()));
     }
 
     @Override
@@ -163,7 +162,7 @@ public class MysqlSerializer extends TableSerializer {
         // Parse all user data of a schema element
         String json = entry.column(HugeKeys.USER_DATA);
         @SuppressWarnings("unchecked")
-        Map<String, Object> userdata = JsonUtil.fromJson(json, Map.class);
+        Map<String, Object> userdata = HugeJsonUtil.fromJson(json, Map.class);
         for (Map.Entry<String, Object> e : userdata.entrySet()) {
             schema.userdata(e.getKey(), e.getValue());
         }

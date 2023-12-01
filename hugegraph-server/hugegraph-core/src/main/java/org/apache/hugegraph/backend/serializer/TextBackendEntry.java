@@ -32,7 +32,7 @@ import org.apache.hugegraph.backend.id.Id;
 import org.apache.hugegraph.backend.store.BackendEntry;
 import org.apache.hugegraph.type.HugeType;
 import org.apache.hugegraph.type.define.HugeKeys;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.HugeJsonUtil;
 import org.apache.hugegraph.util.StringEncoding;
 
 public class TextBackendEntry implements BackendEntry, Cloneable {
@@ -165,7 +165,7 @@ public class TextBackendEntry implements BackendEntry, Cloneable {
     }
 
     public boolean containsValue(String value) {
-        return this.columns.values().contains(value);
+        return this.columns.containsValue(value);
     }
 
     public void append(TextBackendEntry entry) {
@@ -191,13 +191,13 @@ public class TextBackendEntry implements BackendEntry, Cloneable {
             }
             List<Object> values = new ArrayList<>();
             @SuppressWarnings("unchecked")
-            List<Object> oldValues = JsonUtil.fromJson(oldValue, List.class);
+            List<Object> oldValues = HugeJsonUtil.fromJson(oldValue, List.class);
             @SuppressWarnings("unchecked")
-            List<Object> newValues = JsonUtil.fromJson(newValue, List.class);
+            List<Object> newValues = HugeJsonUtil.fromJson(newValue, List.class);
             values.addAll(oldValues);
             values.addAll(newValues);
             // Update the old value
-            this.column(col.getKey(), JsonUtil.toJson(values));
+            this.column(col.getKey(), HugeJsonUtil.toJson(values));
         }
     }
 
@@ -221,13 +221,13 @@ public class TextBackendEntry implements BackendEntry, Cloneable {
 
             // TODO: ensure the old value is a list and json format (for index)
             @SuppressWarnings("unchecked")
-            List<Object> oldValues = JsonUtil.fromJson(oldValue, List.class);
+            List<Object> oldValues = HugeJsonUtil.fromJson(oldValue, List.class);
             @SuppressWarnings("unchecked")
-            List<Object> newValues = JsonUtil.fromJson(newValue, List.class);
+            List<Object> newValues = HugeJsonUtil.fromJson(newValue, List.class);
             List<Object> values = new ArrayList<>(oldValues);
             values.removeAll(newValues);
             // Update the old value
-            this.column(col.getKey(), JsonUtil.toJson(values));
+            this.column(col.getKey(), HugeJsonUtil.toJson(values));
         }
     }
 

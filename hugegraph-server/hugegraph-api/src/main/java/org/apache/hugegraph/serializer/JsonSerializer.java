@@ -41,7 +41,7 @@ import org.apache.hugegraph.traversal.algorithm.HugeTraverser;
 import org.apache.hugegraph.traversal.algorithm.SingleSourceShortestPathTraverser.NodeWithWeight;
 import org.apache.hugegraph.traversal.algorithm.SingleSourceShortestPathTraverser.WeightedPaths;
 import org.apache.hugegraph.traversal.optimize.TraversalUtil;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.HugeJsonUtil;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -79,17 +79,17 @@ public class JsonSerializer implements Serializer {
         if (this.apiMeasure != null) {
             builder.put(MEASURE_KEY, this.apiMeasure);
         }
-        return JsonUtil.toJson(builder.build());
+        return HugeJsonUtil.toJson(builder.build());
     }
 
     @Override
     public String writeList(String label, Collection<?> list) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(LBUF_SIZE)) {
             out.write(String.format("{\"%s\": ", label).getBytes(API.CHARSET));
-            out.write(JsonUtil.toJson(list).getBytes(API.CHARSET));
+            out.write(HugeJsonUtil.toJson(list).getBytes(API.CHARSET));
             if (this.apiMeasure != null) {
                 out.write(String.format(",\"%s\": ", MEASURE_KEY).getBytes(API.CHARSET));
-                out.write(JsonUtil.toJson(this.apiMeasure).getBytes(API.CHARSET));
+                out.write(HugeJsonUtil.toJson(this.apiMeasure).getBytes(API.CHARSET));
             }
             out.write("}".getBytes(API.CHARSET));
             return out.toString(API.CHARSET);
@@ -117,7 +117,7 @@ public class JsonSerializer implements Serializer {
                 } else {
                     first = false;
                 }
-                out.write(JsonUtil.toJson(iter.next()).getBytes(API.CHARSET));
+                out.write(HugeJsonUtil.toJson(iter.next()).getBytes(API.CHARSET));
             }
             out.write("]".getBytes(API.CHARSET));
 
@@ -142,7 +142,7 @@ public class JsonSerializer implements Serializer {
 
             if (this.apiMeasure != null) {
                 out.write(String.format(",\"%s\":[", MEASURE_KEY).getBytes(API.CHARSET));
-                out.write(JsonUtil.toJson(this.apiMeasure).getBytes(API.CHARSET));
+                out.write(HugeJsonUtil.toJson(this.apiMeasure).getBytes(API.CHARSET));
             }
 
             out.write("}".getBytes(API.CHARSET));
@@ -162,12 +162,12 @@ public class JsonSerializer implements Serializer {
 
     @Override
     public String writePropertyKey(PropertyKey propertyKey) {
-        return JsonUtil.toJson(propertyKey);
+        return HugeJsonUtil.toJson(propertyKey);
     }
 
     @Override
     public String writeTaskWithSchema(
-            SchemaElement.TaskWithSchema taskWithSchema) {
+        SchemaElement.TaskWithSchema taskWithSchema) {
         StringBuilder builder = new StringBuilder();
         long id = taskWithSchema.task() == null ?
                   0L : taskWithSchema.task().asLong();
@@ -190,7 +190,7 @@ public class JsonSerializer implements Serializer {
                .append(id);
         if (this.apiMeasure != null) {
             builder.append(String.format(",\"%s\":[", MEASURE_KEY));
-            builder.append(JsonUtil.toJson(this.apiMeasure));
+            builder.append(HugeJsonUtil.toJson(this.apiMeasure));
         }
         return builder.append("}").toString();
     }
@@ -202,7 +202,7 @@ public class JsonSerializer implements Serializer {
 
     @Override
     public String writeVertexLabel(VertexLabel vertexLabel) {
-        return JsonUtil.toJson(vertexLabel);
+        return HugeJsonUtil.toJson(vertexLabel);
     }
 
     @Override
@@ -212,7 +212,7 @@ public class JsonSerializer implements Serializer {
 
     @Override
     public String writeEdgeLabel(EdgeLabel edgeLabel) {
-        return JsonUtil.toJson(edgeLabel);
+        return HugeJsonUtil.toJson(edgeLabel);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class JsonSerializer implements Serializer {
 
     @Override
     public String writeIndexlabel(IndexLabel indexLabel) {
-        return JsonUtil.toJson(indexLabel);
+        return HugeJsonUtil.toJson(indexLabel);
     }
 
     @Override
@@ -232,7 +232,7 @@ public class JsonSerializer implements Serializer {
 
     @Override
     public String writeVertex(Vertex vertex) {
-        return JsonUtil.toJson(vertex);
+        return HugeJsonUtil.toJson(vertex);
     }
 
     @Override
@@ -242,7 +242,7 @@ public class JsonSerializer implements Serializer {
 
     @Override
     public String writeEdge(Edge edge) {
-        return JsonUtil.toJson(edge);
+        return HugeJsonUtil.toJson(edge);
     }
 
     @Override
@@ -252,7 +252,7 @@ public class JsonSerializer implements Serializer {
 
     @Override
     public String writeIds(List<Id> ids) {
-        return JsonUtil.toJson(ids);
+        return HugeJsonUtil.toJson(ids);
     }
 
     @Override
@@ -294,7 +294,7 @@ public class JsonSerializer implements Serializer {
             builder.put(MEASURE_KEY, this.apiMeasure);
         }
 
-        return JsonUtil.toJson(builder.build());
+        return HugeJsonUtil.toJson(builder.build());
     }
 
     @Override
@@ -320,7 +320,7 @@ public class JsonSerializer implements Serializer {
         if (this.apiMeasure != null) {
             builder.put(MEASURE_KEY, this.apiMeasure);
         }
-        return JsonUtil.toJson(builder.build());
+        return HugeJsonUtil.toJson(builder.build());
     }
 
     @Override
@@ -333,7 +333,7 @@ public class JsonSerializer implements Serializer {
         if (this.apiMeasure != null) {
             builder.put(MEASURE_KEY, this.apiMeasure);
         }
-        return JsonUtil.toJson(builder.build());
+        return HugeJsonUtil.toJson(builder.build());
     }
 
     @Override
@@ -348,7 +348,7 @@ public class JsonSerializer implements Serializer {
         if (this.apiMeasure != null) {
             builder.put(MEASURE_KEY, this.apiMeasure);
         }
-        return JsonUtil.toJson(builder.build());
+        return HugeJsonUtil.toJson(builder.build());
     }
 
     @Override
@@ -364,7 +364,7 @@ public class JsonSerializer implements Serializer {
         if (this.apiMeasure != null) {
             builder.put(MEASURE_KEY, this.apiMeasure);
         }
-        return JsonUtil.toJson(builder.build());
+        return HugeJsonUtil.toJson(builder.build());
     }
 
     @Override
@@ -386,6 +386,6 @@ public class JsonSerializer implements Serializer {
             builder.put(MEASURE_KEY, this.apiMeasure);
         }
 
-        return JsonUtil.toJson(builder.build());
+        return HugeJsonUtil.toJson(builder.build());
     }
 }

@@ -22,7 +22,7 @@ import java.util.Map;
 import org.apache.hugegraph.job.algorithm.Algorithm;
 import org.apache.hugegraph.job.algorithm.AlgorithmPool;
 import org.apache.hugegraph.util.E;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.HugeJsonUtil;
 
 public class AlgorithmJob extends UserJob<Object> {
 
@@ -47,7 +47,7 @@ public class AlgorithmJob extends UserJob<Object> {
         String input = this.task().input();
         E.checkArgumentNotNull(input, "The input can't be null");
         @SuppressWarnings("unchecked")
-        Map<String, Object> map = JsonUtil.fromJson(input, Map.class);
+        Map<String, Object> map = HugeJsonUtil.fromJson(input, Map.class);
 
         Object value = map.get("algorithm");
         E.checkArgument(value instanceof String,

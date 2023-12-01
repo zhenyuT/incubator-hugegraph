@@ -30,8 +30,8 @@ import org.apache.hugegraph.define.Checkable;
 import org.apache.hugegraph.exception.NotFoundException;
 import org.apache.hugegraph.metrics.MetricsUtil;
 import org.apache.hugegraph.util.E;
+import org.apache.hugegraph.util.HugeJsonUtil;
 import org.apache.hugegraph.util.InsertionOrderUtil;
-import org.apache.hugegraph.util.JsonUtil;
 import org.apache.hugegraph.util.Log;
 import org.slf4j.Logger;
 
@@ -48,22 +48,23 @@ public class API {
     public static final String TEXT_PLAIN = MediaType.TEXT_PLAIN;
     public static final String APPLICATION_JSON = MediaType.APPLICATION_JSON;
     public static final String APPLICATION_JSON_WITH_CHARSET =
-                               APPLICATION_JSON + ";charset=" + CHARSET;
-    public static final String APPLICATION_TEXT_WITH_CHARSET = MediaType.TEXT_PLAIN + ";charset=" + CHARSET;
+        APPLICATION_JSON + ";charset=" + CHARSET;
+    public static final String APPLICATION_TEXT_WITH_CHARSET =
+        MediaType.TEXT_PLAIN + ";charset=" + CHARSET;
     public static final String JSON = MediaType.APPLICATION_JSON_TYPE
-                                               .getSubtype();
+        .getSubtype();
     public static final String ACTION_APPEND = "append";
     public static final String ACTION_ELIMINATE = "eliminate";
     public static final String ACTION_CLEAR = "clear";
     protected static final Logger LOG = Log.logger(API.class);
     private static final Meter SUCCEED_METER =
-                         MetricsUtil.registerMeter(API.class, "commit-succeed");
+        MetricsUtil.registerMeter(API.class, "commit-succeed");
     private static final Meter ILLEGAL_ARG_ERROR_METER =
-                         MetricsUtil.registerMeter(API.class, "illegal-arg");
+        MetricsUtil.registerMeter(API.class, "illegal-arg");
     private static final Meter EXPECTED_ERROR_METER =
-                         MetricsUtil.registerMeter(API.class, "expected-error");
+        MetricsUtil.registerMeter(API.class, "expected-error");
     private static final Meter UNKNOWN_ERROR_METER =
-                         MetricsUtil.registerMeter(API.class, "unknown-error");
+        MetricsUtil.registerMeter(API.class, "unknown-error");
 
     public static HugeGraph graph(GraphManager manager, String graph) {
         HugeGraph g = manager.graph(graph);
@@ -164,7 +165,7 @@ public class API {
 
         Map<String, Object> props = null;
         try {
-            props = JsonUtil.fromJson(properties, Map.class);
+            props = HugeJsonUtil.fromJson(properties, Map.class);
         } catch (Exception ignored) {
             // ignore
         }
