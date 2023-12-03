@@ -22,14 +22,13 @@ import java.util.HashMap;
 import org.apache.hugegraph.api.API;
 import org.apache.hugegraph.config.HugeConfig;
 import org.apache.hugegraph.config.ServerOptions;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.JsonUtil2;
 
 import com.codahale.metrics.annotation.Timed;
 import com.taobao.arthas.agent.attach.ArthasAgent;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -54,8 +53,9 @@ public class ArthasAPI extends API {
         configMap.put("arthas.telnetPort", config.get(ServerOptions.ARTHAS_TELNET_PORT));
         configMap.put("arthas.httpPort", config.get(ServerOptions.ARTHAS_HTTP_PORT));
         configMap.put("arthas.ip", config.get(ServerOptions.ARTHAS_IP));
-        configMap.put("arthas.disabledCommands", config.get(ServerOptions.ARTHAS_DISABLED_COMMANDS));
+        configMap.put("arthas.disabledCommands",
+                      config.get(ServerOptions.ARTHAS_DISABLED_COMMANDS));
         ArthasAgent.attach(configMap);
-        return JsonUtil.toJson(configMap);
+        return JsonUtil2.toJson(configMap);
     }
 }

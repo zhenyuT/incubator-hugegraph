@@ -20,16 +20,6 @@ package org.apache.hugegraph.api.traversers;
 import static org.apache.hugegraph.traversal.algorithm.HugeTraverser.DEFAULT_ELEMENTS_LIMIT;
 import static org.apache.hugegraph.traversal.algorithm.HugeTraverser.DEFAULT_MAX_DEGREE;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.inject.Singleton;
-import jakarta.ws.rs.DefaultValue;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-
 import org.apache.hugegraph.HugeGraph;
 import org.apache.hugegraph.api.API;
 import org.apache.hugegraph.api.graph.EdgeAPI;
@@ -39,9 +29,20 @@ import org.apache.hugegraph.core.GraphManager;
 import org.apache.hugegraph.traversal.algorithm.PredictionTraverser;
 import org.apache.hugegraph.type.define.Directions;
 import org.apache.hugegraph.util.E;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.JsonUtil2;
+
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableMap;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 
 /**
  * AdamicAdar is one of the prediction algorithms in graph, you can get more
@@ -81,7 +82,7 @@ public class AdamicAdarAPI extends API {
         try (PredictionTraverser traverser = new PredictionTraverser(g)) {
             double score = traverser.adamicAdar(sourceId, targetId, dir,
                                                 edgeLabel, maxDegree, limit);
-            return JsonUtil.toJson(ImmutableMap.of("adamic_adar", score));
+            return JsonUtil2.toJson(ImmutableMap.of("adamic_adar", score));
         }
     }
 }

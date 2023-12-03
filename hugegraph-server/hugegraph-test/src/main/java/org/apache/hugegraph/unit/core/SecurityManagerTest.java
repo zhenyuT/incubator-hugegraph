@@ -32,10 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import org.apache.hugegraph.HugeException;
 import org.apache.hugegraph.HugeFactory;
 import org.apache.hugegraph.HugeGraph;
@@ -48,13 +44,17 @@ import org.apache.hugegraph.task.HugeTask;
 import org.apache.hugegraph.testutil.Assert;
 import org.apache.hugegraph.type.define.NodeRole;
 import org.apache.hugegraph.unit.FakeObjects;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.JsonUtil2;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import com.google.common.collect.ImmutableMap;
 
 public class SecurityManagerTest {
 
     private static HugeGraph graph;
-    private static HugeSecurityManager sm = new HugeSecurityManager();
+    private static final HugeSecurityManager sm = new HugeSecurityManager();
 
     @BeforeClass
     public static void init() {
@@ -70,6 +70,43 @@ public class SecurityManagerTest {
         graph.close();
         // Stop daemon thread
         HugeFactory.shutdown(30L);
+    }
+
+    private static void assertError(String result, String message) {
+        Assert.assertTrue(result, result.endsWith(message) ||
+                                  result.contains(message));
+    }
+
+    private static String runGremlinJob(String gremlin) {
+        JobBuilder<Object> builder = JobBuilder.of(graph);
+        Map<String, Object> input = new HashMap<>();
+        input.put("gremlin", gremlin);
+        input.put("bindings", ImmutableMap.of());
+        input.put("language", "gremlin-groovy");
+        input.put("aliases", ImmutableMap.of());
+        builder.name("test-gremlin-job")
+               .input(JsonUtil2.toJson(input))
+               .job(new GremlinJob());
+        HugeTask<?> task = builder.schedule();
+        try {
+            task = graph.taskScheduler().waitUntilTaskCompleted(task.id(), 10);
+        } catch (TimeoutException e) {
+            throw new HugeException("Wait for task timeout: %s", e, task);
+        }
+        return task.result();
+    }
+
+    private static HugeGraph loadGraph(boolean needClear) {
+        HugeConfig config = FakeObjects.newConfig();
+        HugeGraph graph = HugeFactory.open(config);
+
+        if (needClear) {
+            graph.clearBackend();
+        }
+        graph.initBackend();
+        graph.serverStarted(IdGenerator.of("server1"), NodeRole.MASTER);
+
+        return graph;
     }
 
     @Test
@@ -133,11 +170,11 @@ public class SecurityManagerTest {
             // ignored exception
         }
         result = runGremlinJob(String.format(
-                 "new FileInputStream(new File(\"%s\"))", pom));
+            "new FileInputStream(new File(\"%s\"))", pom));
         assertError(result, "(No such file or directory)");
 
         // read file fd
-        @SuppressWarnings({ "unused", "resource" })
+        @SuppressWarnings({"unused", "resource"})
         FileInputStream fis = new FileInputStream(FileDescriptor.in);
         result = runGremlinJob("new FileInputStream(FileDescriptor.in)");
         assertError(result, "Not allowed to read fd via Gremlin");
@@ -157,7 +194,7 @@ public class SecurityManagerTest {
         assertError(result, "Not allowed to write file via Gremlin");
 
         // write file fd
-        @SuppressWarnings({ "unused", "resource" })
+        @SuppressWarnings({"unused", "resource"})
         FileOutputStream fos = new FileOutputStream(FileDescriptor.out);
         result = runGremlinJob("new FileOutputStream(FileDescriptor.out)");
         assertError(result, "Not allowed to write fd via Gremlin");
@@ -171,7 +208,7 @@ public class SecurityManagerTest {
         new File("").getAbsolutePath();
         result = runGremlinJob("new File(\"\").getAbsolutePath()");
         assertError(result, "Not allowed to access " +
-                    "system property(user.dir) via Gremlin");
+                            "system property(user.dir) via Gremlin");
     }
 
     @Test
@@ -210,7 +247,7 @@ public class SecurityManagerTest {
         sm.checkConnect("localhost", 8200, new Object());
         result = runGremlinJob("System.getSecurityManager()" +
                                ".checkConnect(\"localhost\", 8200, " +
-                                              "new Object())");
+                               "new Object())");
         assertError(result, "Not allowed to connect socket via Gremlin");
 
         sm.checkMulticast(InetAddress.getByAddress(new byte[]{0, 0, 0, 0}));
@@ -220,11 +257,11 @@ public class SecurityManagerTest {
         assertError(result, "Not allowed to multicast via Gremlin");
 
         sm.checkMulticast(InetAddress.getByAddress(new byte[]{0, 0, 0, 0}),
-                                                   (byte) 1);
+                          (byte) 1);
         result = runGremlinJob("bs = [0, 0, 0, 0] as byte[]; ttl = (byte) 1;" +
                                "System.getSecurityManager()" +
                                ".checkMulticast(InetAddress.getByAddress(" +
-                                                "bs), ttl)");
+                               "bs), ttl)");
         assertError(result, "Not allowed to multicast via Gremlin");
 
         sm.checkSetFactory();
@@ -285,42 +322,5 @@ public class SecurityManagerTest {
     @Test
     public void testSecurityAccess() {
         sm.checkSecurityAccess("link");
-    }
-
-    private static void assertError(String result, String message) {
-        Assert.assertTrue(result, result.endsWith(message) ||
-                                  result.contains(message));
-    }
-
-    private static String runGremlinJob(String gremlin) {
-        JobBuilder<Object> builder = JobBuilder.of(graph);
-        Map<String, Object> input = new HashMap<>();
-        input.put("gremlin", gremlin);
-        input.put("bindings", ImmutableMap.of());
-        input.put("language", "gremlin-groovy");
-        input.put("aliases", ImmutableMap.of());
-        builder.name("test-gremlin-job")
-               .input(JsonUtil.toJson(input))
-               .job(new GremlinJob());
-        HugeTask<?> task = builder.schedule();
-        try {
-            task = graph.taskScheduler().waitUntilTaskCompleted(task.id(), 10);
-        } catch (TimeoutException e) {
-            throw new HugeException("Wait for task timeout: %s", e, task);
-        }
-        return task.result();
-    }
-
-    private static HugeGraph loadGraph(boolean needClear) {
-        HugeConfig config = FakeObjects.newConfig();
-        HugeGraph graph = HugeFactory.open(config);
-
-        if (needClear) {
-            graph.clearBackend();
-        }
-        graph.initBackend();
-        graph.serverStarted(IdGenerator.of("server1"), NodeRole.MASTER);
-
-        return graph;
     }
 }

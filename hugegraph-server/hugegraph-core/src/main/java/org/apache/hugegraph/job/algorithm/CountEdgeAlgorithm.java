@@ -22,10 +22,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.lang3.mutable.MutableLong;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-
 import org.apache.hugegraph.job.UserJob;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.JsonUtil2;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 
 public class CountEdgeAlgorithm extends AbstractAlgorithm {
 
@@ -72,7 +71,7 @@ public class CountEdgeAlgorithm extends AbstractAlgorithm {
             }
             counts.put("*", new MutableLong(total));
 
-            return JsonUtil.asJson(counts);
+            return JsonUtil2.asJson(counts);
         }
     }
 }
