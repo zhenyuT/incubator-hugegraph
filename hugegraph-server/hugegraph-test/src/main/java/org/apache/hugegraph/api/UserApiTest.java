@@ -20,7 +20,7 @@ package org.apache.hugegraph.api;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.JsonUtil2;
 import org.apache.tinkerpop.shaded.jackson.core.type.TypeReference;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
@@ -43,8 +43,9 @@ public class UserApiTest extends BaseApiTest {
         Response r = this.client().get(PATH, ImmutableMap.of("limit", NO_LIMIT));
         String result = r.readEntity(String.class);
         Map<String, List<Map<String, Object>>> resultMap =
-            JsonUtil.fromJson(result,
-                              new TypeReference<Map<String, List<Map<String, Object>>>>() {});
+            JsonUtil2.fromJson(result,
+                               new TypeReference<Map<String, List<Map<String, Object>>>>() {
+                               });
         List<Map<String, Object>> users = resultMap.get("users");
         for (Map<String, Object> user : users) {
             if ("admin".equals(user.get("user_name"))) {
@@ -172,8 +173,9 @@ public class UserApiTest extends BaseApiTest {
         String result = assertResponseStatus(200, r);
 
         Map<String, List<Map<String, Object>>> resultMap =
-            JsonUtil.fromJson(result,
-                              new TypeReference<Map<String, List<Map<String, Object>>>>() {});
+            JsonUtil2.fromJson(result,
+                               new TypeReference<Map<String, List<Map<String, Object>>>>() {
+                               });
         return resultMap.get("users");
     }
 }

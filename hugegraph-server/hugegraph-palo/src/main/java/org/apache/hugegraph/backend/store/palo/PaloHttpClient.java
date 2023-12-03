@@ -20,17 +20,16 @@ package org.apache.hugegraph.backend.store.palo;
 import java.util.Map;
 
 import org.apache.hugegraph.config.HugeConfig;
-import org.apache.hugegraph.rest.AbstractRestClient;
-import org.apache.hugegraph.rest.RestClient;
-import org.apache.hugegraph.rest.RestHeaders;
 
 import com.google.common.collect.ImmutableMap;
 
-import okhttp3.Response;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 
 public class PaloHttpClient {
 
-    private final RestClient client;
+    private final Client client;
 
     public PaloHttpClient(HugeConfig config, String database) {
         String url = this.buildUrl(config, database);
@@ -51,15 +50,15 @@ public class PaloHttpClient {
         // Format path
         String path = table + "/_load";
         // Format headers
-        RestHeaders headers = new RestHeaders();
-        headers.add("Expect", "100-continue");
+        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+        headers.putSingle("Expect", "100-continue");
         // Format params
         Map<String, Object> params = ImmutableMap.of("label", label);
         // Send request
         this.client.put(path, body, headers, params);
     }
 
-    private static class Client extends AbstractRestClient {
+    private static class Client extends AbstractRestClient2 {
 
         private static final int SECOND = 1000;
 
@@ -68,7 +67,7 @@ public class PaloHttpClient {
         }
 
         @Override
-        protected void checkStatus(Response response, int... statuses) {
+        protected void checkStatus(Response response, jakarta.ws.rs.core.Response.Status... statuses) {
             // pass
         }
     }

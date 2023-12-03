@@ -22,8 +22,8 @@ import java.util.Map;
 import org.apache.hugegraph.config.CoreOptions;
 import org.apache.hugegraph.job.computer.Computer;
 import org.apache.hugegraph.job.computer.ComputerPool;
-import org.apache.hugegraph.util.JsonUtil;
 import org.apache.hugegraph.util.E;
+import org.apache.hugegraph.util.JsonUtil2;
 
 public class ComputerJob extends SysJob<Object> {
 
@@ -52,7 +52,7 @@ public class ComputerJob extends SysJob<Object> {
         String input = this.task().input();
         E.checkArgumentNotNull(input, "The input can't be null");
         @SuppressWarnings("unchecked")
-        Map<String, Object> map = JsonUtil.fromJson(input, Map.class);
+        Map<String, Object> map = JsonUtil2.fromJson(input, Map.class);
 
         Object value = map.get("computer");
         E.checkArgument(value instanceof String,

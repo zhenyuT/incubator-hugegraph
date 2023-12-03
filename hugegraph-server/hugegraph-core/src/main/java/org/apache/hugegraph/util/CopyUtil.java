@@ -81,6 +81,6 @@ public final class CopyUtil {
     public static <T> T deepCopy(T object) {
         @SuppressWarnings("unchecked")
         Class<T> cls = (Class<T>) object.getClass();
-        return JsonUtil.fromJson(JsonUtil.toJson(object), cls);
+        return JsonUtil2.fromJson(JsonUtil2.toJson(object), cls);
     }
 }

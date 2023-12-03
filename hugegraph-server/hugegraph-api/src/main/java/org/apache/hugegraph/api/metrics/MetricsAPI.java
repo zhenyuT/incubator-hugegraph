@@ -57,7 +57,7 @@ import org.apache.hugegraph.metrics.MetricsUtil;
 import org.apache.hugegraph.metrics.ServerReporter;
 import org.apache.hugegraph.metrics.SystemMetrics;
 import org.apache.hugegraph.util.InsertionOrderUtil;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.JsonUtil2;
 import org.apache.hugegraph.util.Log;
 import org.apache.hugegraph.version.ApiVersion;
 import org.apache.tinkerpop.gremlin.server.util.MetricManager;
@@ -72,7 +72,6 @@ import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.GET;
@@ -91,7 +90,7 @@ public class MetricsAPI extends API {
     private static final String JSON_STR = "json";
 
     static {
-        JsonUtil.registerModule(new MetricsModule(SECONDS, MILLISECONDS, false));
+        JsonUtil2.registerModule(new MetricsModule(SECONDS, MILLISECONDS, false));
     }
 
     private final SystemMetrics systemMetrics;
@@ -107,7 +106,7 @@ public class MetricsAPI extends API {
     @RolesAllowed({"admin", "$owner= $action=metrics_read"})
     @Operation(summary = "get the system metrics")
     public String system() {
-        return JsonUtil.toJson(this.systemMetrics.metrics());
+        return JsonUtil2.toJson(this.systemMetrics.metrics());
     }
 
     @GET
@@ -130,7 +129,7 @@ public class MetricsAPI extends API {
             }
             results.put(graph, metrics);
         }
-        return JsonUtil.toJson(results);
+        return JsonUtil2.toJson(results);
     }
 
     @GET
@@ -141,7 +140,7 @@ public class MetricsAPI extends API {
     @Operation(summary = "get the gauges metrics")
     public String gauges() {
         ServerReporter reporter = ServerReporter.instance();
-        return JsonUtil.toJson(reporter.gauges());
+        return JsonUtil2.toJson(reporter.gauges());
     }
 
     @GET
@@ -152,7 +151,7 @@ public class MetricsAPI extends API {
     @Operation(summary = "get the counters metrics")
     public String counters() {
         ServerReporter reporter = ServerReporter.instance();
-        return JsonUtil.toJson(reporter.counters());
+        return JsonUtil2.toJson(reporter.counters());
     }
 
     @GET
@@ -163,7 +162,7 @@ public class MetricsAPI extends API {
     @Operation(summary = "get the histograms metrics")
     public String histograms() {
         ServerReporter reporter = ServerReporter.instance();
-        return JsonUtil.toJson(reporter.histograms());
+        return JsonUtil2.toJson(reporter.histograms());
     }
 
     @GET
@@ -174,7 +173,7 @@ public class MetricsAPI extends API {
     @Operation(summary = "get the meters metrics")
     public String meters() {
         ServerReporter reporter = ServerReporter.instance();
-        return JsonUtil.toJson(reporter.meters());
+        return JsonUtil2.toJson(reporter.meters());
     }
 
     @GET
@@ -185,7 +184,7 @@ public class MetricsAPI extends API {
     @Operation(summary = "get the timers metrics")
     public String timers() {
         ServerReporter reporter = ServerReporter.instance();
-        return JsonUtil.toJson(reporter.timers());
+        return JsonUtil2.toJson(reporter.timers());
     }
 
     @GET
@@ -212,7 +211,7 @@ public class MetricsAPI extends API {
         Map<String, Map<String, Object>> metricMap = statistics();
 
         if (type != null && type.equals(JSON_STR)) {
-            return JsonUtil.toJson(metricMap);
+            return JsonUtil2.toJson(metricMap);
         }
         return statisticsProm(metricMap);
     }
@@ -225,7 +224,7 @@ public class MetricsAPI extends API {
         result.put("histograms", reporter.histograms());
         result.put("meters", reporter.meters());
         result.put("timers", reporter.timers());
-        return JsonUtil.toJson(result);
+        return JsonUtil2.toJson(result);
     }
 
     private String baseMetricPrometheusAll() {
@@ -246,7 +245,7 @@ public class MetricsAPI extends API {
         // build gauges metric info
         for (String key : reporter.gauges().keySet()) {
             final Gauge<?> gauge
-                    = reporter.gauges().get(key);
+                = reporter.gauges().get(key);
             if (gauge != null) {
                 helpName = replaceDotDashInKey(key);
                 promMetric.append(STR_HELP)
@@ -273,7 +272,7 @@ public class MetricsAPI extends API {
                           .append(COUNT_ATTR)
                           .append(histogram.getCount() + END_LSTR);
                 promMetric.append(
-                        exportSnapshot(helpName, histogram.getSnapshot()));
+                    exportSnapshot(helpName, histogram.getSnapshot()));
             }
         }
 
@@ -331,7 +330,7 @@ public class MetricsAPI extends API {
                           .append(FIFT_MIN_RATE_ATRR)
                           .append(timer.getFifteenMinuteRate() + END_LSTR);
                 promMetric.append(
-                        exportSnapshot(helpName, timer.getSnapshot()));
+                    exportSnapshot(helpName, timer.getSnapshot()));
             }
         }
 
@@ -354,14 +353,14 @@ public class MetricsAPI extends API {
             }
             // metricsName = path/method
             String metricsName =
-                    entryKey.substring(0, entryKey.length() - lastWord.length() - 1);
+                entryKey.substring(0, entryKey.length() - lastWord.length() - 1);
 
             Counter totalCounter = reporter.counters().get(
-                    joinWithSlash(metricsName, METRICS_PATH_TOTAL_COUNTER));
+                joinWithSlash(metricsName, METRICS_PATH_TOTAL_COUNTER));
             Counter failedCounter = reporter.counters().get(
-                    joinWithSlash(metricsName, METRICS_PATH_FAILED_COUNTER));
+                joinWithSlash(metricsName, METRICS_PATH_FAILED_COUNTER));
             Counter successCounter = reporter.counters().get(
-                    joinWithSlash(metricsName, METRICS_PATH_SUCCESS_COUNTER));
+                joinWithSlash(metricsName, METRICS_PATH_SUCCESS_COUNTER));
 
 
             Histogram histogram = entry.getValue();

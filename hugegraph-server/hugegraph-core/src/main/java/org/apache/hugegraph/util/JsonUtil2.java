@@ -34,7 +34,7 @@ import org.apache.hugegraph.HugeException;
 import org.apache.hugegraph.io.HugeGraphSONModule;
 import com.google.common.collect.ImmutableSet;
 
-public final class JsonUtil {
+public final class JsonUtil2 {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final ImmutableSet<String> SPECIAL_FLOATS;

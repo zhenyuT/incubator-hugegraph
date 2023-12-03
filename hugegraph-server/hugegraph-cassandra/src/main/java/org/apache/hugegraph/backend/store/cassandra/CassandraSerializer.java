@@ -44,7 +44,8 @@ import org.apache.hugegraph.type.define.DataType;
 import org.apache.hugegraph.type.define.HugeKeys;
 import org.apache.hugegraph.util.E;
 import org.apache.hugegraph.util.InsertionOrderUtil;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.JsonUtil2;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -205,7 +206,7 @@ public class CassandraSerializer extends TableSerializer {
         assert entry instanceof CassandraBackendEntry;
         for (Map.Entry<String, Object> e : schema.userdata().entrySet()) {
             entry.column(HugeKeys.USER_DATA, e.getKey(),
-                         JsonUtil.toJson(e.getValue()));
+                         JsonUtil2.toJson(e.getValue()));
         }
     }
 
@@ -217,7 +218,7 @@ public class CassandraSerializer extends TableSerializer {
         Map<String, String> userdata = entry.column(HugeKeys.USER_DATA);
         for (Map.Entry<String, String> e : userdata.entrySet()) {
             String key = e.getKey();
-            Object value = JsonUtil.fromJson(e.getValue(), Object.class);
+            Object value = JsonUtil2.fromJson(e.getValue(), Object.class);
             schema.userdata(key, value);
         }
     }

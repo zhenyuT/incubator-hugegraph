@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 import org.apache.hugegraph.testutil.Assert;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.JsonUtil2;
 import org.apache.tinkerpop.shaded.jackson.core.type.TypeReference;
 import org.junit.After;
 import org.junit.Before;
@@ -42,7 +42,8 @@ public class LoginApiTest extends BaseApiTest {
     @Before
     public void setup() {
         Response r = this.createUser("test", "test");
-        Map<String, Object> user = r.readEntity(new GenericType<Map<String, Object>>(){});
+        Map<String, Object> user = r.readEntity(new GenericType<Map<String, Object>>() {
+        });
         this.userId4Test = (String) user.get("id");
     }
 
@@ -114,8 +115,9 @@ public class LoginApiTest extends BaseApiTest {
         assertJsonContains(result, "user_id");
         assertJsonContains(result, "user_name");
 
-        Map<String, Object> user = JsonUtil.fromJson(result,
-                                                     new TypeReference<Map<String, Object>>(){});
+        Map<String, Object> user = JsonUtil2.fromJson(result,
+                                                      new TypeReference<Map<String, Object>>() {
+                                                      });
         Assert.assertEquals(this.userId4Test, user.get("user_id"));
         Assert.assertEquals("test", user.get("user_name"));
 
@@ -156,8 +158,9 @@ public class LoginApiTest extends BaseApiTest {
     }
 
     private String tokenFromResponse(String content) {
-        Map<String, Object> data = JsonUtil.fromJson(content,
-                                                     new TypeReference<Map<String, Object>>(){});
+        Map<String, Object> data = JsonUtil2.fromJson(content,
+                                                      new TypeReference<Map<String, Object>>() {
+                                                      });
         return (String) data.get("token");
     }
 }

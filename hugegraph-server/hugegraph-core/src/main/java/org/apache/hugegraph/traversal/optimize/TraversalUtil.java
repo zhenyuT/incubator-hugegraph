@@ -51,7 +51,7 @@ import org.apache.hugegraph.type.define.HugeKeys;
 import org.apache.hugegraph.util.CollectionUtil;
 import org.apache.hugegraph.util.DateUtil;
 import org.apache.hugegraph.util.E;
-import org.apache.hugegraph.util.JsonUtil;
+import org.apache.hugegraph.util.JsonUtil2;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.Contains;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
@@ -147,7 +147,7 @@ public final class TraversalUtil {
                 local.setGraph(graph);
             }
             for (final Traversal.Admin<?, ?> global :
-                    ((TraversalParent) step).getGlobalChildren()) {
+                ((TraversalParent) step).getGlobalChildren()) {
                 if (global.getGraph().filter(g -> !(g instanceof EmptyGraph)).isPresent()) {
                     continue;
                 }
@@ -207,7 +207,7 @@ public final class TraversalUtil {
                 OrderGlobalStep<?, ?> orderStep = (OrderGlobalStep<?, ?>) step;
                 orderStep.getComparators().forEach(comp -> {
                     ElementValueComparator<?> comparator =
-                            (ElementValueComparator<?>) comp.getValue1();
+                        (ElementValueComparator<?>) comp.getValue1();
                     holder.orderBy(comparator.getPropertyKey(),
                                    (Order) comparator.getValueComparator());
                 });
@@ -243,7 +243,7 @@ public final class TraversalUtil {
                     long limit = holder.setRange(range.getLowRange(),
                                                  range.getHighRange());
                     RangeGlobalStep<Object> newRange = new RangeGlobalStep<>(
-                                                       traversal, 0, limit);
+                        traversal, 0, limit);
                     TraversalHelper.replaceStep(range, newRange, traversal);
                 }
             }
@@ -311,9 +311,9 @@ public final class TraversalUtil {
     }
 
     public static ConditionQuery fillConditionQuery(
-                                 ConditionQuery query,
-                                 List<HasContainer> hasContainers,
-                                 HugeGraph graph) {
+        ConditionQuery query,
+        List<HasContainer> hasContainers,
+        HugeGraph graph) {
         HugeType resultType = query.resultType();
 
         for (HasContainer has : hasContainers) {
@@ -550,7 +550,7 @@ public final class TraversalUtil {
         // Convert contains-key or contains-value
         BiPredicate<?, ?> bp = has.getPredicate().getBiPredicate();
         E.checkArgument(bp == Compare.eq, "CONTAINS query with relation " +
-                        "'%s' is not supported", bp);
+                                          "'%s' is not supported", bp);
 
         HugeKeys key = token2HugeKey(has.getKey());
         E.checkNotNull(key, "token key");
@@ -602,8 +602,8 @@ public final class TraversalUtil {
 
     @SuppressWarnings("unchecked")
     public static <V> Iterator<V> filterResult(
-                                  List<HasContainer> hasContainers,
-                                  Iterator<? extends Element> iterator) {
+        List<HasContainer> hasContainers,
+        Iterator<? extends Element> iterator) {
         if (hasContainers.isEmpty()) {
             return (Iterator<V>) iterator;
         }
@@ -626,8 +626,8 @@ public final class TraversalUtil {
         // Extract all has steps in traversal
         @SuppressWarnings("rawtypes")
         List<HasStep> steps =
-                      TraversalHelper.getStepsOfAssignableClassRecursively(
-                      HasStep.class, traversal);
+            TraversalHelper.getStepsOfAssignableClassRecursively(
+                HasStep.class, traversal);
 
         if (steps.isEmpty()) {
             return;
@@ -644,8 +644,8 @@ public final class TraversalUtil {
             }
 
             Optional<Graph> parentGraph = ((Traversal<?, ?>) traversal.getParent())
-                                                                      .asAdmin()
-                                                                      .getGraph();
+                .asAdmin()
+                .getGraph();
             if (parentGraph.filter(g -> !(g instanceof EmptyGraph)).isPresent()) {
                 traversal.setGraph(parentGraph.get());
             }
@@ -964,14 +964,14 @@ public final class TraversalUtil {
 
     private static Number predicateNumber(String value) {
         try {
-            return JsonUtil.fromJson(value, Number.class);
+            return JsonUtil2.fromJson(value, Number.class);
         } catch (Exception e) {
             // Try to parse date
             if (e.getMessage().contains("not a valid number") ||
                 e.getMessage().contains("Unexpected character ('-'")) {
                 try {
                     if (value.startsWith("\"")) {
-                        value = JsonUtil.fromJson(value, String.class);
+                        value = JsonUtil2.fromJson(value, String.class);
                     }
                     return DateUtil.parse(value).getTime();
                 } catch (Exception ignored) {
@@ -980,7 +980,7 @@ public final class TraversalUtil {
             }
 
             throw new HugeException(
-                      "Invalid value '%s', expect a number", e, value);
+                "Invalid value '%s', expect a number", e, value);
         }
     }
 
@@ -1005,7 +1005,7 @@ public final class TraversalUtil {
                 continue;
             }
             throw new HugeException(
-                      "Invalid value '%s', expect a list of number", value);
+                "Invalid value '%s', expect a list of number", value);
         }
         return values.toArray(new Number[0]);
     }
@@ -1013,20 +1013,20 @@ public final class TraversalUtil {
     @SuppressWarnings("unchecked")
     private static <V> V predicateArg(String value) {
         try {
-            return (V) JsonUtil.fromJson(value, Object.class);
+            return (V) JsonUtil2.fromJson(value, Object.class);
         } catch (Exception e) {
             throw new HugeException(
-                      "Invalid value '%s', expect a single value", e, value);
+                "Invalid value '%s', expect a single value", e, value);
         }
     }
 
     @SuppressWarnings("unchecked")
     private static <V> List<V> predicateArgs(String value) {
         try {
-            return JsonUtil.fromJson("[" + value + "]", List.class);
+            return JsonUtil2.fromJson("[" + value + "]", List.class);
         } catch (Exception e) {
             throw new HugeException(
-                      "Invalid value '%s', expect a list", e, value);
+                "Invalid value '%s', expect a list", e, value);
         }
     }
 }
